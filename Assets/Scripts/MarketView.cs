@@ -35,11 +35,11 @@ namespace OneFrame.Market.Core
             }
         }
 
-        private void BuyHandler(Product product)
+        private async void BuyHandler(Product product)
         {
             if(!_productUICells.ContainsKey(product.ID)) return;
 
-            bool status = _market.Buy(product);
+            bool status = await _market.Buy(product);
 
             if(status)
             {

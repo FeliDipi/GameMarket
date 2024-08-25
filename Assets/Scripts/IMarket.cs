@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OneFrame.Market.Core
 {
@@ -9,6 +10,6 @@ namespace OneFrame.Market.Core
 
         public List<Product> Products {get;}
 
-        public bool Buy(Product product);
+        public Task<bool> Buy(Product product);
     }
 }

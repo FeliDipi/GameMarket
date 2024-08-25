@@ -1,26 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace OneFrame.Market.Core
 {
     public class Market : MonoBehaviour, IMarket
     {
+        [SerializeField] private string _userId = "66cb3b033d879d40806c2068";
+
         public Action<List<Product>> OnGetProducts { get; set; }
         public List<Product> Products => _products;
         private List<Product> _products = new List<Product>();
 
+        private APIClient _apiClient = new APIClient();
+
         private async void Start()
         {
-            APIClient apiClient = new APIClient();
-            _products = await apiClient.Get();
-
+            _products = await _apiClient.GetProducts();
             OnGetProducts?.Invoke(_products);
         }
 
-        public bool Buy(Product product)
+        public async Task<bool> Buy(Product product)
         {
-            bool buyStatus = true;
+            bool buyStatus = await _apiClient.BuyProduct(_userId,product.ID);
 
             if(buyStatus) 
             {

@@ -9,13 +9,18 @@ namespace OneFrame.Market.Core
 {
     public class APIClient
     {
-        private string _apiURL = "http://localhost:3000/api/products";
+        private string _apiURL = "http://localhost:3000/api";
 
-        public async Task<List<Product>> Get()
+        private List<string> _endPoints = new List<string>() {
+            "products",
+            "buy"
+        };
+
+        public async Task<List<Product>> GetProducts()
         {
             try
             {
-                string data = await GetCoroutine();
+                string data = await GetProductsTask();
                 Debug.Log($"Data received: {data}");
 
                 return JsonConvert.DeserializeObject<List<Product>>(data);
@@ -28,9 +33,41 @@ namespace OneFrame.Market.Core
             return new List<Product>();
         }
 
-        private async Task<string> GetCoroutine()
+        public async Task<bool> BuyProduct(string userId, string productId)
         {
-            using (UnityWebRequest request = UnityWebRequest.Get(_apiURL))
+            bool state = await BuyProductTask(userId, productId);
+            return state;
+        }
+
+        private async Task<bool> BuyProductTask(string userId, string productId)
+        {
+            string body = JsonConvert.SerializeObject(new {userId, productId});
+
+            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{_endPoints[1]}","POST"))
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(body);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type","application/json");
+
+                var operation = request.SendWebRequest();
+
+                while(!operation.isDone) await Task.Yield();
+
+                if(request.result == UnityWebRequest.Result.Success)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private async Task<string> GetProductsTask()
+        {
+            using (UnityWebRequest request = UnityWebRequest.Get($"{_apiURL}/{_endPoints[0]}"))
             {
                 var operation = request.SendWebRequest();
 
