@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace OneFrame.Market.Core
 {
     public interface IMarket
     {
-        public bool Buy(IProduct product);        
+        public List<IProduct> Products {get;}
     }
 }
