@@ -1,11 +1,22 @@
+using Newtonsoft.Json;
+
 namespace OneFrame.Market.Core
 {
-    public interface IProduct
+    public class Product
     {
-        public string ID {get; set;}
-        public string Name {get; set;}
-        public string Description {get; set;}
-        public string Thumbnail {get; set;}
-        public float Price {get; set;}
+        [JsonProperty("_id")] public string ID {get; private set;}
+        [JsonProperty("name")] public string Name {get; private set;}
+        [JsonProperty("description")] public string Description {get; private set;}
+        [JsonProperty("price")] public float Price {get; private set;}
+        [JsonProperty("reference")] public string Reference {get; private set;}
+
+        public Product(string id, string name, string description, float price, string reference)
+        {
+            ID = id;
+            Name = name;
+            Description = description;
+            Price = price;
+            Reference = reference;
+        }   
     }
 }
