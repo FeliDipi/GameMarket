@@ -11,11 +11,17 @@ namespace OneFrame.Market.Core
     {
         private string _apiURL = "http://localhost:3000/api";
 
-        private List<string> _endPoints = new List<string>() {
-            "products",
-            "buy",
-            "user"
+        private static class ENDPOINT {
+            public static string PRODUCTS="products";
+            public static string BUY="buy";
+            public static string USER="user";
         };
+
+        private static class METHOD
+        {
+            public static string GET="GET";
+            public static string POST="POST";
+        }
 
         public async Task<List<Product>> GetProducts()
         {
@@ -61,7 +67,7 @@ namespace OneFrame.Market.Core
         {
             string body = JsonConvert.SerializeObject(new {userId, productId});
 
-            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{_endPoints[1]}","POST"))
+            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{ENDPOINT.BUY}",METHOD.POST))
             {
                 byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(body);
                 request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -85,7 +91,7 @@ namespace OneFrame.Market.Core
 
         private async Task<string> GetProductsTask()
         {
-            using (UnityWebRequest request = UnityWebRequest.Get($"{_apiURL}/{_endPoints[0]}"))
+            using (UnityWebRequest request = UnityWebRequest.Get($"{_apiURL}/{ENDPOINT.PRODUCTS}"))
             {
                 var operation = request.SendWebRequest();
 
@@ -106,7 +112,7 @@ namespace OneFrame.Market.Core
         {
             string body = JsonConvert.SerializeObject(new {userId});
 
-            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{_endPoints[2]}","POST"))
+            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{ENDPOINT.USER}",METHOD.POST))
             {
                 byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(body);
                 request.uploadHandler = new UploadHandlerRaw(bodyRaw);
