@@ -13,7 +13,8 @@ namespace OneFrame.Market.Core
 
         private List<string> _endPoints = new List<string>() {
             "products",
-            "buy"
+            "buy",
+            "user"
         };
 
         public async Task<List<Product>> GetProducts()
@@ -31,6 +32,23 @@ namespace OneFrame.Market.Core
             }
 
             return new List<Product>();
+        }
+
+        public async Task<User> GetUser(string userId)
+        {
+            try
+            {
+                string data = await GetUserTask(userId);
+                Debug.Log($"Data received: {data}");
+
+                return JsonConvert.DeserializeObject<User>(data);
+            }
+            catch(Exception ex)
+            {
+                Debug.LogError($"Error receiving data: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<bool> BuyProduct(string userId, string productId)
@@ -69,6 +87,32 @@ namespace OneFrame.Market.Core
         {
             using (UnityWebRequest request = UnityWebRequest.Get($"{_apiURL}/{_endPoints[0]}"))
             {
+                var operation = request.SendWebRequest();
+
+                while(!operation.isDone) await Task.Yield();
+
+                if(request.result == UnityWebRequest.Result.Success)
+                {
+                    return request.downloadHandler.text;
+                }
+                else
+                {
+                    throw new Exception(request.error);
+                }
+            }
+        }
+
+        private async Task<string> GetUserTask(string userId)
+        {
+            string body = JsonConvert.SerializeObject(new {userId});
+
+            using (UnityWebRequest request = new UnityWebRequest($"{_apiURL}/{_endPoints[2]}","POST"))
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(body);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type","application/json");
+
                 var operation = request.SendWebRequest();
 
                 while(!operation.isDone) await Task.Yield();
